@@ -1,0 +1,4 @@
+
+- Program doesn't differenciate between valid and invalid words
+
+- cancelling word input causes a crash
