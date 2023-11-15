@@ -25,7 +25,9 @@ import requests
 import random
 import numpy as np
 
-class App1(QWidget):
+import UIframe as UIFrame
+
+class App1(UIFrame.UIWindow) :
 
     def __init__(self, app):
         super().__init__()
@@ -93,7 +95,7 @@ class App1(QWidget):
         self.hide()
 
 
-class App2(QWidget):
+class App2(UIFrame.UIWindow):
 
     def __init__(self, index1, size):
         super().__init__()
@@ -107,15 +109,15 @@ class App2(QWidget):
         self.index1 = index1
 
         QWidget.__init__(self)
-        layout = QVBoxLayout()
-        self.setLayout(layout)
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
         
         self.label_1 = QLabel('Target:', self)
         # moving position
         
         self.label_1.setStyleSheet("color: rgb(115, 1, 230)")
         self.label_1.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.label_1)
+        self.layout.addWidget(self.label_1)
 
         # setting font and size
         self.label_1.setFont(QFont('Oxygen', 13))
@@ -130,7 +132,7 @@ class App2(QWidget):
         self.listwidget.addItem("Portuguese")
         self.listwidget.clicked.connect(self.clicked) #connect to window2
         self.listwidget.clicked.connect(self.window2) #connect to window2
-        layout.addWidget(self.listwidget)
+        self.layout.addWidget(self.listwidget)
 
         self.initUI()
 
@@ -141,6 +143,7 @@ class App2(QWidget):
 
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
+        self.InitBackButton(self.layout)
         self.show()
 
     def clicked(self, qmodelindex):
@@ -155,7 +158,7 @@ class App2(QWidget):
         self.hide()
 
 
-class App3(QWidget):
+class App3(UIFrame.UIWindow):
 
     def __init__(self, index1, index2, size):
         super().__init__()
@@ -350,7 +353,7 @@ class App3(QWidget):
             
 
 
-class app4(QWidget):
+class app4(UIFrame.UIWindow):
     # this class is a fourth app window
     # it will be used to present some sentences examples
     
@@ -415,7 +418,7 @@ class app4(QWidget):
 
 # this block of code will run only if this is the main program, not if it is imported as a module.
 if __name__ == '__main__':
-
+    windowManager = UIFrame.WindowManager()
     app = QApplication(sys.argv)
     ex = App1(app)
     ex.show()
