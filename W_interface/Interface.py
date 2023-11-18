@@ -11,6 +11,7 @@ updated by Thibaud Michelet
 added a fourth window to display example and fixed the formatting
 fixed issues regarding the possibility of results to contain more numpy arrays stacks than usual
 
+
 """
 
 import sys
@@ -30,14 +31,14 @@ class App1(QWidget):
     def __init__(self, app):
         super().__init__()
 
-        
+
         screen = app.primaryScreen()
         windowHeight = 0
         windowHeight = screen.size().height() / 3
         windowHeight = int(max(100, min(400, windowHeight)))
         self.size = windowHeight
         windowWidth = windowHeight
-        
+
         self.title = 'Mnajik vII'
         self.left = 725
         self.top = 425
@@ -47,7 +48,7 @@ class App1(QWidget):
         QWidget.__init__(self)
         layout = QVBoxLayout()
         self.setLayout(layout)
-        
+
         # first create list title
         self.label_1 = QLabel('Origin :', self)
 
@@ -57,7 +58,7 @@ class App1(QWidget):
         # setting font and size
         self.label_1.setFont(QFont('Oxygen', 13))
         layout.addWidget(self.label_1)
-        
+
         # create list of possible
         self.listwidget = QListWidget()
         self.listwidget.addItem("English")
@@ -75,7 +76,7 @@ class App1(QWidget):
 
     def initUI(self, layout):
 
-        
+
 
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -109,17 +110,17 @@ class App2(QWidget):
         QWidget.__init__(self)
         layout = QVBoxLayout()
         self.setLayout(layout)
-        
+
         self.label_1 = QLabel('Target:', self)
         # moving position
-        
+
         self.label_1.setStyleSheet("color: rgb(115, 1, 230)")
         self.label_1.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.label_1)
 
         # setting font and size
         self.label_1.setFont(QFont('Oxygen', 13))
-        
+
         self.listwidget = QListWidget()
         self.listwidget.addItem("French")
         self.listwidget.addItem("English (BROKEN)")
@@ -137,7 +138,7 @@ class App2(QWidget):
 
     def initUI(self):
 
-        
+
 
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -172,7 +173,7 @@ class App3(QWidget):
 
         # create the layout first
         self.layout = QVBoxLayout()
-        self.setLayout(self.layout)        
+        self.setLayout(self.layout)
 
         self.label_1 = QLabel('Translated Word:  ', self)
         #
@@ -182,8 +183,8 @@ class App3(QWidget):
 
         # setting font and size
         self.label_1.setFont(QFont('Oxygen', 15))
-    
-        
+
+
 
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -193,18 +194,18 @@ class App3(QWidget):
         ################################################################
 
         #run text through mnajik and return results.
-        
-        
+
+
 
         self.results = Mnain(self.input_word, index1, index2)
         # results returns [translatedWord, singleWord, pairSplit, syllabSplit, VowelStrip, exampleSentences]
-        
+
         # add the translated word
         self.transWord = QLabel(self.results[0], self) #Translated word
         self.transWord.setStyleSheet("color: rgb(115, 0, 230)")
         self.transWord.setFont(QFont('Oxygen', 14))
         self.layout.addWidget(self.transWord)
-        
+
 
         # add the title, and then all of the mnemonic outputs.
         self.label_2 = QLabel('Mnemonic outputs:  ', self)
@@ -213,21 +214,21 @@ class App3(QWidget):
 
         # setting font and size
         self.label_2.setFont(QFont('Oxygen', 15))
-        
+
         # the last slot is for the example sentences
-        
+
         for result in range(1, len(self.results)-1) :
             self.createLabels(result)
-        
+
         # adds a push button that allows to switch to the last window, showing axample sentences
-        
+
         button = QPushButton("Next", self)
         button.clicked.connect(self.clicked)
         self.layout.addWidget(button)
 
         self.show()
         return;
-        
+
         # EVERYTHING UNDER THIS LINE IS LEGACY CODE
 
         self.label_3 = QLabel(results[0], self) #Translated word
@@ -303,34 +304,34 @@ class App3(QWidget):
         self.show()
 
         self.show()
-        
-    
+
+
     def createLabels(self, index) :
-        
+
         if (len(self.results[index]) == 0) :
             return;
-        
+
         # apparently this create an error because some results are not always a string
         print("label : ", self.results[index])
-        
+
         thing = self.results[index]
-        
+
         if (isinstance(thing[0], (list, tuple, np.ndarray))) :
             for i in range(len(thing)) :
                 self.createLabel(thing[i][0])
         else :
             self.createLabel(thing[0])
-            
-        
-    
+
+
+
     def createLabel(self, string) :
         label = QLabel(string, self)
-        
+
         label.setStyleSheet("color: rgb(115, 0, 230)")
         label.setFont(QFont('Oxygen', 14))
-        
+
         self.layout.addWidget(label)
-        
+
 
 
     def getText(self): #For entering word
@@ -340,21 +341,21 @@ class App3(QWidget):
         else:
 
             sys.exit(app.exec_())
-    
+
     def clicked(self):
         print("next")
         self.w = app4(self.size, self.results)
         self.w.show()
         self.hide()
-        
-            
+
+
 
 
 class app4(QWidget):
     # this class is a fourth app window
     # it will be used to present some sentences examples
-    
-    
+
+
     def __init__(self, size, results):
         super().__init__()
         self.title = 'Mnajik vII'
@@ -362,55 +363,55 @@ class app4(QWidget):
         self.top = 425
         self.width = size
         self.height = size
-        
+
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
-        
+
         self.results = results;
 
         self.initUI()
-        
+
     def initUI(self):
-        
+
         # create the layout first
         self.layout = QVBoxLayout()
-        self.setLayout(self.layout) 
-        
+        self.setLayout(self.layout)
+
         # Then, we add the title
         self.title = QLabel("Examples : ", self)
         self.title.setFont(QFont('Oxygen', 17))
         self.title.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(self.title)
-        
+
         # first, get examples
         self.examples = self.results[5]
         print(self.examples)
-        
+
         if (len(self.examples) == 0) :
             # doesn't displays anything else if there is no examples
             return;
-    
+
         example = self.examples[random.randint(0, len(self.examples)-1)]
         print(example)
-        
+
         # display the original language example
-        
+
         self.exampleSRC = QLabel(example["src"], self)
         self.exampleSRC.setFont(QFont('Oxygen', 15))
         self.exampleSRC.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(self.exampleSRC)
-        
+
         # displays dest language example
-        
+
         self.exampleDST = QLabel(example["dst"], self)
         self.exampleDST.setFont(QFont('Oxygen', 15))
         self.exampleDST.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(self.exampleDST)
-        
-            
-        
-        
-        
+
+
+
+
+
 
 
 # this block of code will run only if this is the main program, not if it is imported as a module.
