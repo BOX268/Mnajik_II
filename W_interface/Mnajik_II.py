@@ -18,7 +18,7 @@ import requests
 import epitran #https://pypi.org/project/epitran/
 from asjp import ipa2asjp
 import numpy as np
-from similarity.normalized_levenshtein import NormalizedLevenshtein # https://pypi.org/project/strsim/
+from strsimpy.normalized_levenshtein import NormalizedLevenshtein # https://pypi.org/project/strsim/
 import nltk
 nltk.download('wordnet')
 from nltk.corpus import wordnet as wn
@@ -31,11 +31,11 @@ import pyphen
 distance_measure = NormalizedLevenshtein()
 
 def word2asjp(translated_word, destination_langt , destination_lang1):
-    
+
     # take a translated word
     # ASJP : Automated Similarity Judgment Program
     # return asjp result
-    
+
 
     print("\nTranslated word:\n")
 
@@ -44,7 +44,7 @@ def word2asjp(translated_word, destination_langt , destination_lang1):
     epi = epitran.Epitran(destination_lang1)
     IPA_word = epi.transliterate( translated_word)
     input_ASJP_word = ipa2asjp(IPA_word)
-    
+
 
     #print(input_ASJP_word)
 
@@ -67,7 +67,7 @@ def pair_split( words,input_ASJP_word, destination_lang1 ):
 
     #h = Hyphenator( destination_lang1 )
     # THIS CODE HAS BEEN COMMENTED DUE TO A MODULE CHANGE
-    
+
     # The new module
     dic = pyphen.Pyphen(lang=destination_lang1)
     asjp_hyphenate = list(dic.iterate(input_ASJP_word))
