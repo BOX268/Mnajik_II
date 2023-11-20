@@ -31,24 +31,13 @@ class App1(UIFrame.UIWindow) :
 
     def __init__(self, app):
         super().__init__()
-
         
-        screen = app.primaryScreen()
-        windowHeight = 0
-        windowHeight = screen.size().height() / 3
-        windowHeight = int(max(100, min(400, windowHeight)))
-        self.size = windowHeight
-        windowWidth = windowHeight
+        QWidget.__init__(self)
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
         
         self.title = 'Mnajik vII'
-        self.left = 725
-        self.top = 425
-        self.width = windowWidth
-        self.height = windowHeight
-
-        QWidget.__init__(self)
-        layout = QVBoxLayout()
-        self.setLayout(layout)
+        
         
         # first create list title
         self.label_1 = QLabel('Origin :', self)
@@ -58,7 +47,7 @@ class App1(UIFrame.UIWindow) :
 
         # setting font and size
         self.label_1.setFont(QFont('Oxygen', 13))
-        layout.addWidget(self.label_1)
+        self.layout.addWidget(self.label_1)
         
         # create list of possible
         self.listwidget = QListWidget()
@@ -69,19 +58,32 @@ class App1(UIFrame.UIWindow) :
 
         self.listwidget.clicked.connect(self.clicked) #connect to window2
         self.listwidget.clicked.connect(self.window2) #connect to window2
-        layout.addWidget(self.listwidget)
+        self.layout.addWidget(self.listwidget)
         self.setFocus()
 
-        self.initUI(layout)
 
+    def initUI(self) :
 
-    def initUI(self, layout):
-
-        
+        # first, resize the window
+        self.Resize();
 
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
         self.show()
+    
+    def Resize(self) :
+        
+        screen = app.primaryScreen()
+        windowHeight = 0
+        windowHeight = screen.size().height() / 3
+        windowHeight = int(max(100, min(400, windowHeight)))
+        self.size = windowHeight
+        windowWidth = windowHeight
+        
+        self.left = 725
+        self.top = 425
+        self.width = windowWidth
+        self.height = windowHeight
 
     def clicked(self, qmodelindex):
         item = self.listwidget.currentItem()
@@ -90,27 +92,21 @@ class App1(UIFrame.UIWindow) :
 
 
     def window2(self):                                             # <===
-        self.w = App2(self.index1, self.size)
+        self.w = App2(self.index1)
         self.w.show()
         self.hide()
 
 
 class App2(UIFrame.UIWindow):
 
-    def __init__(self, index1, size):
+    def __init__(self, index1):
         super().__init__()
-
-        self.title = 'Mnajik vII'
-        self.left = 725
-        self.top = 425
-        self.size = size
-        self.width = size
-        self.height = size
-        self.index1 = index1
 
         QWidget.__init__(self)
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
+        
+        self.index1 = index1
         
         self.label_1 = QLabel('Target:', self)
         # moving position
@@ -139,12 +135,29 @@ class App2(UIFrame.UIWindow):
 
     def initUI(self):
 
+        self.Resize()
         
+        self.title = 'Mnajik vII'
 
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
         self.InitBackButton(self.layout)
         self.show()
+    
+    
+    def Resize(self) :
+        
+        screen = app.primaryScreen()
+        windowHeight = 0
+        windowHeight = screen.size().height() / 3
+        windowHeight = int(max(100, min(400, windowHeight)))
+        self.size = windowHeight
+        windowWidth = windowHeight
+        
+        self.left = 725
+        self.top = 425
+        self.width = windowWidth
+        self.height = windowHeight
 
     def clicked(self, qmodelindex):
         item = self.listwidget.currentItem()

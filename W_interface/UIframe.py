@@ -19,6 +19,8 @@ from PyQt5.QtCore import QCoreApplication
 
 class WindowManager :
     
+    sharedData = {} # this dict contains all the data that should be shared between windows
+    
     # this class contains all the windows of the app
     def __init__(self) :
         self.windows = [] # this variable will contain all the window's classes. 
@@ -57,6 +59,9 @@ class UIWindow(QWidget) :
     def InitUI(self, hierarchy, manager) :
         self.hierachy = hierarchy
         self.manager = manager
+    
+    def Resize(self) :
+        return;
         
     def Open(self) :
         self.show()

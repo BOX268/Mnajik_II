@@ -1,0 +1,20 @@
+- Portuguese origin translation breaking :
+
+Traceback (most recent call last):
+
+  File ~/Repos/Mnajik_II/W_interface/Interface.py:169 in window2
+    self.w = App3(self.index1, self.index2, self.size)
+
+  File ~/Repos/Mnajik_II/W_interface/Interface.py:185 in __init__
+    self.initUI(index1, index2)
+
+  File ~/Repos/Mnajik_II/W_interface/Interface.py:215 in initUI
+    self.results = Mnain(self.input_word, index1, index2)
+
+  File ~/Repos/Mnajik_II/W_interface/Mnajik_II.py:177 in Mnain
+    translated_word, exampleSentences = linguee.translateSingleWord(input_word, origin_lang_list[origin], destination_langt_list[target])
+
+  File ~/Repos/Mnajik_II/W_interface/LingueeInterface.py:36 in translateSingleWord
+    print(json[0]["translations"][0]["text"])
+
+KeyError: 0
