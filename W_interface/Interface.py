@@ -33,10 +33,21 @@ class App1(UIFrame.UIWindow) :
         super().__init__()
         
         QWidget.__init__(self)
+        
+        # initilize layout and important stuff.
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
-        
         self.title = 'Mnajik vII'
+        self.setWindowTitle(self.title)
+        
+        print("initialized")
+
+
+    def InitUI(self) :
+
+        print("intiUI")
+        # first, resize the window
+        self.Resize();
         
         
         # first create list title
@@ -57,19 +68,9 @@ class App1(UIFrame.UIWindow) :
         self.listwidget.addItem("Portuguese")
 
         self.listwidget.clicked.connect(self.clicked) #connect to window2
-        self.listwidget.clicked.connect(self.window2) #connect to window2
+        #self.listwidget.clicked.connect(self.window2) #connect to window2
         self.layout.addWidget(self.listwidget)
-        self.setFocus()
-
-
-    def initUI(self) :
-
-        # first, resize the window
-        self.Resize();
-
-        self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
-        self.show()
+        
     
     def Resize(self) :
         
@@ -84,11 +85,16 @@ class App1(UIFrame.UIWindow) :
         self.top = 425
         self.width = windowWidth
         self.height = windowHeight
+        
+        self.setGeometry(self.left, self.top, self.width, self.height)
 
     def clicked(self, qmodelindex):
         item = self.listwidget.currentItem()
         #print( self.listwidget.row(item)  )
-        self.index1 =  self.listwidget.row(item)
+        print("clicked")
+        self.manager.sharedData["originID"] =  self.listwidget.row(item)
+        
+        self.Next()
 
 
     def window2(self):                                             # <===
@@ -99,14 +105,22 @@ class App1(UIFrame.UIWindow) :
 
 class App2(UIFrame.UIWindow):
 
-    def __init__(self, index1):
+    def __init__(self, app):
         super().__init__()
 
         QWidget.__init__(self)
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
         
-        self.index1 = index1
+        self.title = 'Mnajik vII'
+
+        self.setWindowTitle(self.title)
+        
+
+
+    def InitUI(self):
+
+        self.Resize()
         
         self.label_1 = QLabel('Target:', self)
         # moving position
@@ -127,22 +141,10 @@ class App2(UIFrame.UIWindow):
         self.listwidget.addItem("Hungarian")
         self.listwidget.addItem("Portuguese")
         self.listwidget.clicked.connect(self.clicked) #connect to window2
-        self.listwidget.clicked.connect(self.window2) #connect to window2
+        #self.listwidget.clicked.connect(self.window2) #connect to window2
         self.layout.addWidget(self.listwidget)
-
-        self.initUI()
-
-
-    def initUI(self):
-
-        self.Resize()
         
-        self.title = 'Mnajik vII'
-
-        self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
         self.InitBackButton(self.layout)
-        self.show()
     
     
     def Resize(self) :
@@ -158,6 +160,8 @@ class App2(UIFrame.UIWindow):
         self.top = 425
         self.width = windowWidth
         self.height = windowHeight
+        
+        self.setGeometry(self.left, self.top, self.width, self.height)
 
     def clicked(self, qmodelindex):
         item = self.listwidget.currentItem()
@@ -166,7 +170,7 @@ class App2(UIFrame.UIWindow):
 
 
     def window2(self):                                             # <===
-        self.w = App3(self.index1, self.index2, self.size)
+        self.w = App3(0, self.index2, self.size)
         self.w.show()
         self.hide()
 
@@ -433,6 +437,8 @@ class app4(UIFrame.UIWindow):
 if __name__ == '__main__':
     windowManager = UIFrame.WindowManager()
     app = QApplication(sys.argv)
-    ex = App1(app)
-    ex.show()
+    windowManager.Initialize((App1(app), App2(app)))
+    windowManager.Switch(0)
+    #ex = App1(app)
+    #ex.show()
     sys.exit(app.exec_())

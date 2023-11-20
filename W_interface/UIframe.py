@@ -19,51 +19,59 @@ from PyQt5.QtCore import QCoreApplication
 
 class WindowManager :
     
-    sharedData = {} # this dict contains all the data that should be shared between windows
+    
     
     # this class contains all the windows of the app
     def __init__(self) :
         self.windows = [] # this variable will contain all the window's classes. 
-        self.index = 0
+        self.index = -1
         #They should all implement the UIWindow class
+        
+        self.sharedData = {} # this dict contains all the data that should be shared between windows
     
     def Initialize(self, windowsToUse):
         self.windows = windowsToUse
         for i, window in enumerate(self.windows) :
-            window.InitUI(i, self)
+            window.hierarchy = i
+            window.manager = self
+            window.InitUI()
         
     def Switch(self, newIndex):
         if newIndex < 0 : newIndex = 0
-        if newIndex > len(windows) - 1 : newIndex = len(windows) - 1
-        if (newIndex == index) : return
+        if newIndex > len(self.windows) - 1 : newIndex = len(self.windows) - 1
+        if (newIndex == self.index) : return
+        
+        print("new window index : " + str(newIndex))
         
         # close the windows that need it, and also wipe them if necessary
-        if (index > newIndex) :
-            for i in range(newIndex + 1, index + 1) :
+        if (self.index > newIndex) :
+            for i in range(newIndex + 1, self.index + 1) :
                 self.windows[i].Close(wipe = True)
                 self.windows[i].Wipe()
         else :
-            self.windows[index].Close()
+            self.windows[self.index].Close()
         
         # now, open the desired window
         index = newIndex
-        self.windows[index].Open()
+        self.windows[self.index].Open()
         
 
 
 class UIWindow(QWidget) :
     
     def __init__(self) :
+        self.hierarchy = 0
+        self.manager = 0
         super().__init__()
     
-    def InitUI(self, hierarchy, manager) :
-        self.hierachy = hierarchy
-        self.manager = manager
+    def InitUI(self) :
+        return;
     
     def Resize(self) :
         return;
         
     def Open(self) :
+        self.setFocus()
         self.show()
         
     def Close(self, wipe=False) :
@@ -75,11 +83,15 @@ class UIWindow(QWidget) :
         return
     
     def InitBackButton (self, layout) :
+        # this method add a standard "back" button to the window
         self.backButton = QPushButton("Back", self)
         self.backButton.clicked.connect(self.Back)
         layout.addWidget(self.backButton)
     
     def Back(self) :
-        # this method add a standard "back" button to the window
-        manager.Switch(hierarchy)
+        manager.Switch(hierarchy - 1)
         return
+    
+    def Next(self) :
+        print("next window :)")
+        manager.Switch(hierarchy + 1)
