@@ -24,17 +24,21 @@ class WindowManager :
     # this class contains all the windows of the app
     def __init__(self) :
         self.windows = [] # this variable will contain all the window's classes. 
-        self.index = -1
+        self.index = 0
+        self.app = None;
         #They should all implement the UIWindow class
         
         self.sharedData = {} # this dict contains all the data that should be shared between windows
     
-    def Initialize(self, windowsToUse):
+    def Initialize(self, windowsToUse, app):
         self.windows = windowsToUse
+        self.app = app
         for i, window in enumerate(self.windows) :
+            print("initialization")
             window.hierarchy = i
             window.manager = self
             window.InitUI()
+        windowsToUse[0].Open()
         
     def Switch(self, newIndex):
         if newIndex < 0 : newIndex = 0
@@ -52,7 +56,7 @@ class WindowManager :
             self.windows[self.index].Close()
         
         # now, open the desired window
-        index = newIndex
+        self.index = newIndex
         self.windows[self.index].Open()
         
 
@@ -89,9 +93,9 @@ class UIWindow(QWidget) :
         layout.addWidget(self.backButton)
     
     def Back(self) :
-        manager.Switch(hierarchy - 1)
+        self.manager.Switch(self.hierarchy - 1)
         return
     
     def Next(self) :
         print("next window :)")
-        manager.Switch(hierarchy + 1)
+        self.manager.Switch(self.hierarchy + 1)

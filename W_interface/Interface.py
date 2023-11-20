@@ -29,7 +29,7 @@ import UIframe as UIFrame
 
 class App1(UIFrame.UIWindow) :
 
-    def __init__(self, app):
+    def __init__(self):
         super().__init__()
         
         QWidget.__init__(self)
@@ -47,7 +47,7 @@ class App1(UIFrame.UIWindow) :
 
         print("intiUI")
         # first, resize the window
-        self.Resize();
+        
         
         
         # first create list title
@@ -67,14 +67,15 @@ class App1(UIFrame.UIWindow) :
         self.listwidget.addItem("Spanish")
         self.listwidget.addItem("Portuguese")
 
-        self.listwidget.clicked.connect(self.clicked) #connect to window2
-        #self.listwidget.clicked.connect(self.window2) #connect to window2
+        self.listwidget.clicked.connect(self.clicked)
         self.layout.addWidget(self.listwidget)
+        
+        self.Resize()
         
     
     def Resize(self) :
         
-        screen = app.primaryScreen()
+        screen = self.manager.app.primaryScreen()
         windowHeight = 0
         windowHeight = screen.size().height() / 3
         windowHeight = int(max(100, min(400, windowHeight)))
@@ -88,24 +89,22 @@ class App1(UIFrame.UIWindow) :
         
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-    def clicked(self, qmodelindex):
+    def clicked(self) :
         item = self.listwidget.currentItem()
         #print( self.listwidget.row(item)  )
-        print("clicked")
         self.manager.sharedData["originID"] =  self.listwidget.row(item)
-        
         self.Next()
 
 
     def window2(self):                                             # <===
-        self.w = App2(self.index1)
+        self.w = App2(0)
         self.w.show()
         self.hide()
 
 
 class App2(UIFrame.UIWindow):
 
-    def __init__(self, app):
+    def __init__(self):
         super().__init__()
 
         QWidget.__init__(self)
@@ -113,7 +112,6 @@ class App2(UIFrame.UIWindow):
         self.setLayout(self.layout)
         
         self.title = 'Mnajik vII'
-
         self.setWindowTitle(self.title)
         
 
@@ -437,7 +435,7 @@ class app4(UIFrame.UIWindow):
 if __name__ == '__main__':
     windowManager = UIFrame.WindowManager()
     app = QApplication(sys.argv)
-    windowManager.Initialize((App1(app), App2(app)))
+    windowManager.Initialize((App1(), App2()), app)
     windowManager.Switch(0)
     #ex = App1(app)
     #ex.show()
