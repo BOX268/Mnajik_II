@@ -18,7 +18,7 @@ import requests
 import epitran #https://pypi.org/project/epitran/
 from asjp import ipa2asjp
 import numpy as np
-from strsimpy.normalized_levenshtein import NormalizedLevenshtein # https://pypi.org/project/strsim/
+from similarity.normalized_levenshtein import NormalizedLevenshtein # https://pypi.org/project/strsim/
 import nltk
 nltk.download('wordnet')
 from nltk.corpus import wordnet as wn
@@ -138,6 +138,9 @@ def vowel_strip_single(words, input_ASJP_word):
 
 def Mnain(input_word, origin, target):
 
+    # intiate the class that will contain the results
+    results = Translation()
+    results.raw_word = input_word
     #read in word-lists
     # these word lists comes from panda
     if(origin == 0):
@@ -169,12 +172,32 @@ def Mnain(input_word, origin, target):
     #https://pypi.org/project/PyHyphen/
     destination_lang2_list = ['fr_FR', 'en' ,'es_ES', 'it_IT', 'de', 'hu_HU','pt_BR']
     destination_lang2 = destination_lang2_list[target]
-
+    
+    results.originID = origin_lang_list[origin]
+    results.targetID = destination_langt_list[target]
     #https://sites.google.com/site/opti365/translate_codes
 
-    print(destination_lang1 )
+    results.translated_word, results.examples = linguee.translateSingleWord(input_word, results.originID, results.targetID)
+    results.ASJP_word = word2asjp(results.translated_word, destination_langt, destination_lang1)
+    
+    # change output so it is more readable
+    results.success = True
+    #result = [translated_word, single_word(words,input_ASJP_word), pair_split( words,input_ASJP_word, destination_lang2 ), syllab_split( words, input_ASJP_word, destination_lang2), vowel_strip_single( words, input_ASJP_word), exampleSentences ]
 
-    translated_word, exampleSentences = linguee.translateSingleWord(input_word, origin_lang_list[origin], destination_langt_list[target])
-    input_ASJP_word = word2asjp(translated_word, destination_langt, destination_lang1)
+    return results
 
-    return [translated_word, single_word(words,input_ASJP_word), pair_split( words,input_ASJP_word, destination_lang2 ), syllab_split( words, input_ASJP_word, destination_lang2), vowel_strip_single( words, input_ASJP_word), exampleSentences ]
+class Translation :
+    # this class contains all of a translation's results
+    
+    def __init__(self) :
+        self.success = True
+        self.errorMsg = ""
+        self.raw_word = ""
+        self.translated_word = ""
+        self.originID = ""
+        self.targetID = ""
+        
+        self.examples = []
+        self.ASJP_word = []
+        
+    

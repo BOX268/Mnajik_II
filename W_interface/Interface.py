@@ -139,7 +139,6 @@ class App2(UIFrame.UIWindow):
         self.listwidget.addItem("Hungarian")
         self.listwidget.addItem("Portuguese")
         self.listwidget.clicked.connect(self.clicked) #connect to window2
-        #self.listwidget.clicked.connect(self.window2) #connect to window2
         self.layout.addWidget(self.listwidget)
         
         self.InitBackButton(self.layout)
@@ -161,33 +160,137 @@ class App2(UIFrame.UIWindow):
         
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-    def clicked(self, qmodelindex):
+    def clicked(self) :
         item = self.listwidget.currentItem()
         #print( self.listwidget.row(item)  )
-        self.index2 =  self.listwidget.row(item)
+        self.manager.sharedData["targetID"] = self.listwidget.row(item)
+        self.Next();
 
 
-    def window2(self):                                             # <===
-        self.w = App3(0, self.index2, self.size)
-        self.w.show()
-        self.hide()
+class InputWindow(UIFrame.UIWindow) :
+    
+    def __init__(self) :
+        super().__init__()
+        
+        self.layout = QHBoxLayout()
+        self.setLayout(self.layout)
+        
+        self.title = "Mnajik vII"
+        self.setWindowTitle(self.title)
+    
+    def Resize(self) :
+        screen = app.primaryScreen()
+        windowHeight = 0
+        windowHeight = screen.size().height() / 3
+        windowHeight = int(max(100, min(400, windowHeight)))
+        self.size = windowHeight
+        windowWidth = windowHeight * 2
+        
+        self.left = 725
+        self.top = 425
+        self.width = windowWidth
+        self.height = windowHeight
+        
+        self.setGeometry(self.left, self.top, self.width, self.height)
+    
+    def InitUI(self) :
+        
+        self.Resize()
+        
+        self.containerOrigin = QGroupBox(self)
+        self.containerTarget = QGroupBox(self)
+        self.containerWord = QGroupBox(self)
+        
+        # will need to add some beauty to those groupboxes here
+        self.containerOrigin.setLayout(QVBoxLayout())
+        self.containerTarget.setLayout(QVBoxLayout())
+        self.containerWord.setLayout(QVBoxLayout())
+        
+        self.layout.addWidget(self.containerOrigin)
+        self.layout.addWidget(self.containerTarget)
+        self.layout.addWidget(self.containerWord)
+        
+        # now, initialize the origin selection
+        tempTitle = QLabel('Origin Language :', self.containerOrigin)
+        tempTitle.setStyleSheet("color: rgb(115, 1, 230)")
+        tempTitle.setAlignment(Qt.AlignCenter)
+        tempTitle.setFont(QFont('Oxygen', 13))
+        self.containerOrigin.layout().addWidget(tempTitle)
+        
+        # create list of possible origin languages
+        self.originListwidget = QListWidget(self.containerOrigin)
+        self.originListwidget.addItem("English")
+        self.originListwidget.addItem("French")
+        self.originListwidget.addItem("Spanish")
+        self.originListwidget.addItem("Portuguese")
+        self.containerOrigin.layout().addWidget(self.originListwidget)
+        
+        tempTitle = QLabel('Target Language :', self.containerTarget)
+        tempTitle.setStyleSheet("color: rgb(115, 1, 230)")
+        tempTitle.setAlignment(Qt.AlignCenter)
+        tempTitle.setFont(QFont('Oxygen', 13))
+        self.containerTarget.layout().addWidget(tempTitle)
+        
+        self.targetListwidget = QListWidget(self.containerTarget)
+        self.targetListwidget.addItem("French")
+        self.targetListwidget.addItem("English (BROKEN)")
+        self.targetListwidget.addItem("Spanish")
+        self.targetListwidget.addItem("Italian")
+        self.targetListwidget.addItem("German")
+        self.targetListwidget.addItem("Hungarian")
+        self.targetListwidget.addItem("Portuguese")
+        self.containerTarget.layout().addWidget(self.targetListwidget)
+        
+        tempTitle = QLabel('Word to translate :', self.containerWord)
+        tempTitle.setStyleSheet("color: rgb(115, 1, 230)")
+        tempTitle.setAlignment(Qt.AlignCenter)
+        tempTitle.setFont(QFont('Oxygen', 13))
+        self.containerWord.layout().addWidget(tempTitle)
+        
+        self.wordInput = QLineEdit(self.containerWord)
+        self.containerWord.layout().addWidget(self.wordInput)
+        self.wordInput.returnPressed.connect(self.WordSubmit)
+        
+        self.errorDisplay = QLabel('', self.containerWord)
+        self.errorDisplay.setStyleSheet("color: rgb(180, 1, 1)")
+        self.errorDisplay.setAlignment(Qt.AlignCenter)
+        self.errorDisplay.setFont(QFont('Oxygen', 13))
+        self.containerWord.layout().addWidget(self.errorDisplay)
+    
+    def WordSubmit(self):
+        # When the word is submitted, the first thing to do is to obtain the traduction.
+        results = Mnain(self.wordInput.text, self.originListwidget.row(self.originListwidget.currentItem()), self.targetListwidget.row(self.targetListwidget.currentItem()))
+        self.Next()
+        return;
 
 
 class App3(UIFrame.UIWindow):
 
-    def __init__(self, index1, index2, size):
+    def __init__(self):
         super().__init__()
         self.title = 'Mnajik vII'
+        self.setWindowTitle(self.title)
+    
+    def Resize() :
+        screen = app.primaryScreen()
+        windowHeight = 0
+        windowHeight = screen.size().height() / 3
+        windowHeight = int(max(100, min(400, windowHeight)))
+        self.size = windowHeight
+        windowWidth = windowHeight
+        
         self.left = 725
         self.top = 425
-        self.width = size
-        self.height = size
-        self.size = size
+        self.width = windowWidth
+        self.height = windowHeight
+        
+        self.setGeometry(self.left, self.top, self.width, self.height)
 
-        self.initUI(index1, index2)
 
     def initUI(self, index1, index2):
 
+        self.Resize()
+        
         # create the layout first
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)        
@@ -214,7 +317,7 @@ class App3(UIFrame.UIWindow):
         
         
 
-        self.results = Mnain(self.input_word, index1, index2)
+        self.results = Mnain(self.input_word, self.manager.sharedData["originID"], self.manager.sharedData["targetID"])
         # results returns [translatedWord, singleWord, pairSplit, syllabSplit, VowelStrip, exampleSentences]
         
         # add the translated word
@@ -435,7 +538,7 @@ class app4(UIFrame.UIWindow):
 if __name__ == '__main__':
     windowManager = UIFrame.WindowManager()
     app = QApplication(sys.argv)
-    windowManager.Initialize((App1(), App2()), app)
+    windowManager.Initialize((InputWindow(), App3()), app)
     windowManager.Switch(0)
     #ex = App1(app)
     #ex.show()
