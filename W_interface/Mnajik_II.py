@@ -180,6 +180,11 @@ def Mnain(input_word, origin, target):
     #https://sites.google.com/site/opti365/translate_codes
 
     linguee_results = linguee.translateSingleWord(input_word, results.originID, results.targetID)
+    if (not linguee_results.success) :
+        results.errorMsg = linguee_results.error_msg
+        results.success = False
+        return results
+    
     results.translated_word = linguee_results.translation
     results.examples = linguee_results.examples
     results.ASJP_word = word2asjp(results.translated_word, destination_langt, destination_lang1)

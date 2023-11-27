@@ -260,6 +260,13 @@ class InputWindow(UIFrame.UIWindow) :
     def WordSubmit(self):
         # When the word is submitted, the first thing to do is to obtain the traduction.
         results = Mnain(self.wordInput.text(), self.originListwidget.row(self.originListwidget.currentItem()), self.targetListwidget.row(self.targetListwidget.currentItem()))
+        
+        if (not results.success) :
+            self.errorDisplay.setText(results.errorMsg)
+            return;
+        else :
+            self.errorDisplay.setText("")
+        
         self.manager.sharedData["results"] = results
         self.Next()
         return;
