@@ -259,19 +259,20 @@ class InputWindow(UIFrame.UIWindow) :
     
     def WordSubmit(self):
         # When the word is submitted, the first thing to do is to obtain the traduction.
-        results = Mnain(self.wordInput.text, self.originListwidget.row(self.originListwidget.currentItem()), self.targetListwidget.row(self.targetListwidget.currentItem()))
+        results = Mnain(self.wordInput.text(), self.originListwidget.row(self.originListwidget.currentItem()), self.targetListwidget.row(self.targetListwidget.currentItem()))
+        self.manager.sharedData["results"] = results
         self.Next()
         return;
 
 
-class App3(UIFrame.UIWindow):
+class ResultsWindow(UIFrame.UIWindow):
 
     def __init__(self):
         super().__init__()
         self.title = 'Mnajik vII'
         self.setWindowTitle(self.title)
     
-    def Resize() :
+    def Resize(self) :
         screen = app.primaryScreen()
         windowHeight = 0
         windowHeight = screen.size().height() / 3
@@ -287,143 +288,63 @@ class App3(UIFrame.UIWindow):
         self.setGeometry(self.left, self.top, self.width, self.height)
 
 
-    def initUI(self, index1, index2):
+    def InitUI(self):
 
         self.Resize()
         
         # create the layout first
         self.layout = QVBoxLayout()
-        self.setLayout(self.layout)        
-
-        self.label_1 = QLabel('Translated Word:  ', self)
-        #
-        self.layout.addWidget(self.label_1)
-
-        # setting up background color
-
-        # setting font and size
-        self.label_1.setFont(QFont('Oxygen', 15))
-    
+        self.setLayout(self.layout)    
         
 
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-        self.getText()
-
         ################################################################
 
-        #run text through mnajik and return results.
+        # now, we show the results of mnajik's translation, stored in the shared data of the window manager
+        self.raw = QLabel("", self)
+        self.raw.setAlignment(Qt.AlignCenter)
+        self.raw.setStyleSheet("color : rgb(115, 0, 230)")
+        self.raw.setFont(QFont('Oxygen', 16))
+        self.layout.addWidget(self.raw)
+        
+        self.translation = QLabel("", self)
+        self.translation.setAlignment(Qt.AlignCenter)
+        self.translation.setStyleSheet("color : rgb(115, 0, 230)")
+        self.translation.setFont(QFont('Oxygen', 16))
+        self.layout.addWidget(self.translation)
+        
+        self.pair_split = QLabel("", self)
+        self.pair_split.setAlignment(Qt.AlignCenter)
+        self.pair_split.setStyleSheet("color : rgb(115, 0, 230)")
+        self.pair_split.setFont(QFont('Oxygen', 14))
+        self.layout.addWidget(self.pair_split)
         
         
 
-        self.results = Mnain(self.input_word, self.manager.sharedData["originID"], self.manager.sharedData["targetID"])
+        
         # results returns [translatedWord, singleWord, pairSplit, syllabSplit, VowelStrip, exampleSentences]
         
-        # add the translated word
-        self.transWord = QLabel(self.results[0], self) #Translated word
-        self.transWord.setStyleSheet("color: rgb(115, 0, 230)")
-        self.transWord.setFont(QFont('Oxygen', 14))
-        self.layout.addWidget(self.transWord)
-        
-
-        # add the title, and then all of the mnemonic outputs.
-        self.label_2 = QLabel('Mnemonic outputs:  ', self)
-        #
-        self.layout.addWidget(self.label_2)
-
-        # setting font and size
-        self.label_2.setFont(QFont('Oxygen', 15))
-        
-        # the last slot is for the example sentences
-        
-        for result in range(1, len(self.results)-1) :
-            self.createLabels(result)
-        
-        # adds a push button that allows to switch to the last window, showing axample sentences
-        
-        button = QPushButton("Next", self)
-        button.clicked.connect(self.clicked)
-        self.layout.addWidget(button)
-
-        self.show()
         return;
         
-        # EVERYTHING UNDER THIS LINE IS LEGACY CODE
-
-        self.label_3 = QLabel(results[0], self) #Translated word
-        # moving position
-        self.label_3.move(50, 25)
-
-        self.label_3.setStyleSheet("color: rgb(115, 0, 230)")
-
-        # setting font and size
-        self.label_3.setFont(QFont('Oxygen', 14))
-
-        print(results[1])
-        print("\n")
-
-        if results[1] != []: #single word
-
-            self.label_4 = QLabel(results[1][0] , self)
-            # moving position
-            self.label_4.move(50, 75)
-            self.label_4.setStyleSheet("color: rgb(115, 0, 230)")
-            # setting font and size
-            self.label_4.setFont(QFont('Oxygen', 14))
-
-        print(results[2])
-        print("\n")
-
-        if len(results[2]) > 0: #pair split
-
-            self.label_5 = QLabel(results[2][0] , self)
-            # moving position
-            self.label_5.move(50, 100)
-            self.label_5.setStyleSheet("color: rgb(115, 0, 230)")
-            # setting font and size
-            self.label_5.setFont(QFont('Oxygen', 14))
-
-            #one label for each pair (Learn how to have many)
-
-            self.label_5p = QLabel(results[2][2] , self)
-            # moving position
-            self.label_5p.move(120, 100)
-            self.label_5p.setStyleSheet("color: rgb(115, 0, 230)")
-            # setting font and size
-            self.label_5p.setFont(QFont('Oxygen', 14))
-
-        print(results[3])
-        print("\n")
-
-        if len(results[3]) > 0:
-
-            self.label_6 = QLabel(results[3][0] , self)
-            # moving position
-            self.label_6.move(50, 125)
-            self.label_6.setStyleSheet("color: rgb(115, 0, 230)")
-            # setting font and size
-            self.label_6.setFont(QFont('Oxygen', 14))
-
-        print(results[4])
-
-        if len(results[4]) > 0:
-
-            self.label_7 = QLabel(results[4][0] , self)
-            # moving position
-            self.label_7.move(50, 150)
-            self.label_7.setStyleSheet("color: rgb(115, 0, 230)")
-            # setting font and size
-            self.label_7.setFont(QFont('Oxygen', 14))
-        #######################################################
-
-        qbtn = QPushButton('Quit', self)
-        qbtn.clicked.connect(QCoreApplication.instance().quit)
-        qbtn.move(70, 175)
-
-        self.show()
-
-        self.show()
+    
+    def Reload(self) :
+        
+        if (not "results" in self.manager.sharedData) :
+            return
+        
+        results = self.manager.sharedData["results"]
+        
+        self.raw.setText("Input word : " + results.raw_word)
+        self.translation.setText("Translated word : " + results.translated_word)
+        
+        temp_str = ""
+        for i in range(0, len(results.pair_split), 2) :
+            temp_str = temp_str + str(results.pair_split[i]) + "-"
+        temp_str = temp_str[:-1]
+        
+        self.pair_split.setText(temp_str)
         
     
     def createLabels(self, index) :
@@ -538,7 +459,7 @@ class app4(UIFrame.UIWindow):
 if __name__ == '__main__':
     windowManager = UIFrame.WindowManager()
     app = QApplication(sys.argv)
-    windowManager.Initialize((InputWindow(), App3()), app)
+    windowManager.Initialize((InputWindow(), ResultsWindow()), app)
     windowManager.Switch(0)
     #ex = App1(app)
     #ex.show()

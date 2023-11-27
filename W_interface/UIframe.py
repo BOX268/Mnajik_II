@@ -38,6 +38,7 @@ class WindowManager :
             window.hierarchy = i
             window.manager = self
             window.InitUI()
+        windowsToUse[0].Reload()
         windowsToUse[0].Open()
         
     def Switch(self, newIndex):
@@ -57,6 +58,7 @@ class WindowManager :
         
         # now, open the desired window
         self.index = newIndex
+        self.windows[self.index].Reload()
         self.windows[self.index].Open()
         
 
@@ -70,6 +72,9 @@ class UIWindow(QWidget) :
     
     def InitUI(self) :
         return;
+    
+    def Reload(self) :
+        return
     
     def Resize(self) :
         return;

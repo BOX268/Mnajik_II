@@ -16,24 +16,45 @@ import requests
 
 def translateSingleWord(string, src, dest):
     
+    results = Results()
+    
     api_root = "https://linguee-api.fly.dev/api/v2"
     
-    print(string)
+    print("Word to translate :", string)
     print(src, "to", dest)
     resp = requests.get(f"{api_root}/translations", params={"query": string, "src": src, "dst": dest})
 
     json = resp.json()
+    print(json)
     
+    if (len(json) == 0):
+        results.success = False
+        results.error_msg = "Word not found"
+        return results
+    
+    json = json[0]
+    
+    results.translation = json["translations"][0]["text"]
     # this is the convoluted path in the json that lead to the list of example phrases
     try :
-        examples = json[0]["translations"][0]["examples"]
+        results.examples = json["translations"][0]["examples"]
     
     except :
-        examples = []
+        results.examples = []
     
     print(json)
     if (len(json) > 0):
-        print(json[0]["translations"][0]["text"])
-        return json[0]["translations"][0]["text"], examples
+        print(results.translation)
+        return results
     else:
-        return "NA", examples
+        return results
+
+
+class Results :
+    
+    def __init__(self) :
+        
+        self.success = True
+        self.translation = ""
+        self.examples = ""
+        self.error_msg = ""

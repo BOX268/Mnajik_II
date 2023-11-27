@@ -67,6 +67,8 @@ def pair_split( words,input_ASJP_word, destination_lang1 ):
 
     #h = Hyphenator( destination_lang1 )
     # THIS CODE HAS BEEN COMMENTED DUE TO A MODULE CHANGE
+    
+    # apparently, break down a single word into "syllabes"
 
     # The new module
     dic = pyphen.Pyphen(lang=destination_lang1)
@@ -177,8 +179,12 @@ def Mnain(input_word, origin, target):
     results.targetID = destination_langt_list[target]
     #https://sites.google.com/site/opti365/translate_codes
 
-    results.translated_word, results.examples = linguee.translateSingleWord(input_word, results.originID, results.targetID)
+    linguee_results = linguee.translateSingleWord(input_word, results.originID, results.targetID)
+    results.translated_word = linguee_results.translation
+    results.examples = linguee_results.examples
     results.ASJP_word = word2asjp(results.translated_word, destination_langt, destination_lang1)
+    
+    results.pair_split = pair_split(words, results.ASJP_word, destination_lang2)
     
     # change output so it is more readable
     results.success = True
@@ -199,5 +205,6 @@ class Translation :
         
         self.examples = []
         self.ASJP_word = []
+        self.pair_split = []
         
     
