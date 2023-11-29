@@ -32,6 +32,12 @@ def translateSingleWord(string, src, dest):
         results.error_msg = "Word not found"
         return results
     
+    if ("message" in json) :
+        if (json["message"] == "Translation not found") :
+            results.success = False
+            results.error_msg = "Word not found"
+            return results
+    
     json = json[0]
     
     results.translation = json["translations"][0]["text"]

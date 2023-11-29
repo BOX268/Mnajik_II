@@ -322,11 +322,25 @@ class ResultsWindow(UIFrame.UIWindow):
         self.translation.setFont(QFont('Oxygen', 16))
         self.layout.addWidget(self.translation)
         
+        self.single_word = QLabel("", self)
+        self.single_word.setAlignment(Qt.AlignCenter)
+        self.single_word.setStyleSheet("color : rgb(115, 0, 230)")
+        self.single_word.setFont(QFont('Oxygen', 14))
+        self.layout.addWidget(self.single_word)
+        
         self.pair_split = QLabel("", self)
         self.pair_split.setAlignment(Qt.AlignCenter)
         self.pair_split.setStyleSheet("color : rgb(115, 0, 230)")
         self.pair_split.setFont(QFont('Oxygen', 14))
         self.layout.addWidget(self.pair_split)
+        
+        self.examplesButton = QPushButton("See examples")
+        self.examplesButton.clicked.connect(self.ToExamples)
+        self.quitButton = QPushButton("Return to home")
+        self.quitButton.clicked.connect(self.ToHome)
+        
+        self.layout.addWidget(self.examplesButton)
+        self.layout.addWidget(self.quitButton)
         
         
 
@@ -346,12 +360,28 @@ class ResultsWindow(UIFrame.UIWindow):
         self.raw.setText("Input word : " + results.raw_word)
         self.translation.setText("Translated word : " + results.translated_word)
         
-        temp_str = ""
-        for i in range(0, len(results.pair_split), 2) :
-            temp_str = temp_str + str(results.pair_split[i]) + "-"
-        temp_str = temp_str[:-1]
+        if (len(results.single_word) == 0) :
+            temp_str = "No similarly soundig word found :("
+        else :
+            temp_str = "Word sounding similarly : \n"
+            temp_str = temp_str + results.single_word[0]
+        
+        self.single_word.setText(temp_str)
+        
+        if (len(results.pair_split) == 0) :
+            temp_str = "No similarly sounding words combination found :("
+        else :
+            temp_str = "Combined words sounding similar : \n"
+            for i1 in range(0, len(results.pair_split)) :
+                for i2 in range(0, len(results.pair_split[i1]), 2) :
+                    temp_str = temp_str + str(results.pair_split[i1][i2]) + "-"
+                temp_str = temp_str[:-1]
+                temp_str = temp_str + "\n"
         
         self.pair_split.setText(temp_str)
+        
+        print(results.ASJP_word)
+        print(results.single_word)
         
     
     def createLabels(self, index) :
@@ -390,40 +420,49 @@ class ResultsWindow(UIFrame.UIWindow):
 
             sys.exit(app.exec_())
     
-    def clicked(self):
-        print("next")
-        self.w = app4(self.size, self.results)
-        self.w.show()
-        self.hide()
+    def ToHome(self):
+        self.manager.Switch(0)
+    
+    def ToExamples(self) :
+        self.Next()
         
             
 
 
-class app4(UIFrame.UIWindow):
+class ExamplesWindow(UIFrame.UIWindow):
     # this class is a fourth app window
     # it will be used to present some sentences examples
     
     
-    def __init__(self, size, results):
+    def __init__(self):
         super().__init__()
         self.title = 'Mnajik vII'
-        self.left = 725
-        self.top = 425
-        self.width = size
-        self.height = size
         
         self.setWindowTitle(self.title)
+        
+    
+    def Resize(self) :
+        screen = app.primaryScreen()
+        windowHeight = 0
+        windowHeight = screen.size().height() / 3
+        windowHeight = int(max(100, min(400, windowHeight)))
+        self.size = windowHeight
+        windowWidth = windowHeight
+        
+        self.left = 725
+        self.top = 425
+        self.width = windowWidth
+        self.height = windowHeight
+        
         self.setGeometry(self.left, self.top, self.width, self.height)
         
-        self.results = results;
-
-        self.initUI()
+    def InitUI(self):
         
-    def initUI(self):
-        
+        self.Resize()
         # create the layout first
         self.layout = QVBoxLayout()
         self.setLayout(self.layout) 
+        
         
         # Then, we add the title
         self.title = QLabel("Examples : ", self)
@@ -431,32 +470,55 @@ class app4(UIFrame.UIWindow):
         self.title.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(self.title)
         
-        # first, get examples
-        self.examples = self.results[5]
-        print(self.examples)
         
-        if (len(self.examples) == 0) :
-            # doesn't displays anything else if there is no examples
-            return;
-    
-        example = self.examples[random.randint(0, len(self.examples)-1)]
-        print(example)
         
         # display the original language example
         
-        self.exampleSRC = QLabel(example["src"], self)
+        self.exampleSRC = QLabel("", self)
         self.exampleSRC.setFont(QFont('Oxygen', 15))
+        self.exampleSRC.setStyleSheet("color: rgb(115, 0, 230)")
         self.exampleSRC.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(self.exampleSRC)
         
         # displays dest language example
         
-        self.exampleDST = QLabel(example["dst"], self)
+        self.exampleDST = QLabel("", self)
         self.exampleDST.setFont(QFont('Oxygen', 15))
+        self.exampleDST.setStyleSheet("color: rgb(115, 0, 230)")
         self.exampleDST.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(self.exampleDST)
         
+        self.InitBackButton(self.layout)
+        
+        self.quitButton = QPushButton("Return to home")
+        self.quitButton.clicked.connect(self.ToHome)
+        self.layout.addWidget(self.quitButton)
+        
+        
+        
             
+    def Reload(self) :
+        
+        if (not "results" in self.manager.sharedData) :
+            return
+        
+        # first, get examples
+        examples = self.manager.sharedData["results"].examples
+        
+        if (len(examples) == 0) :
+            # doesn't displays anything else if there is no examples
+            return;
+    
+        # choose one example at random
+        example = examples[random.randint(0, len(examples)-1)]
+        print(example)
+        
+        self.exampleSRC.setText(example["src"])
+        self.exampleDST.setText(example["dst"])
+    
+    def ToHome(self):
+        self.manager.Switch(0)
+        
         
         
         
@@ -466,7 +528,7 @@ class app4(UIFrame.UIWindow):
 if __name__ == '__main__':
     windowManager = UIFrame.WindowManager()
     app = QApplication(sys.argv)
-    windowManager.Initialize((InputWindow(), ResultsWindow()), app)
+    windowManager.Initialize((InputWindow(), ResultsWindow(), ExamplesWindow()), app)
     windowManager.Switch(0)
     #ex = App1(app)
     #ex.show()
