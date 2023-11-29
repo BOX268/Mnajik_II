@@ -259,6 +259,10 @@ class InputWindow(UIFrame.UIWindow) :
     
     def WordSubmit(self):
         # When the word is submitted, the first thing to do is to obtain the traduction.
+        if (self.originListwidget.row(self.originListwidget.currentItem()) == -1 or self.targetListwidget.row(self.targetListwidget.currentItem()) == -1):
+            self.errorDisplay.setText("Please select origin and target language")
+            return
+        
         results = Mnain(self.wordInput.text(), self.originListwidget.row(self.originListwidget.currentItem()), self.targetListwidget.row(self.targetListwidget.currentItem()))
         
         if (not results.success) :
@@ -506,7 +510,9 @@ class ExamplesWindow(UIFrame.UIWindow):
         examples = self.manager.sharedData["results"].examples
         
         if (len(examples) == 0) :
-            # doesn't displays anything else if there is no examples
+            # no examples to display
+            self.exampleSRC.setText("Not found :(")
+            self.exampleDST.setText("Not found :(")
             return;
     
         # choose one example at random
