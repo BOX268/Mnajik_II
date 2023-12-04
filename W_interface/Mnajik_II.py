@@ -14,6 +14,7 @@ modified by thibaud michelet :
 now use a linguee module instead of google_trans
 """
 import LingueeInterface as linguee
+import GoogleTranslation as translator
 import requests
 import epitran #https://pypi.org/project/epitran/
 from asjp import ipa2asjp
@@ -186,7 +187,7 @@ def Mnain(input_word, origin, target):
         results.success = False
         return results
     
-    results.translated_word = linguee_results.translation
+    results.translated_word = translator.translate(input_word, to_language=results.targetID, from_language=results.originID)
     results.examples = linguee_results.examples
     results.ASJP_word = word2asjp(results.translated_word, destination_langt, destination_lang1)
     

@@ -54,6 +54,16 @@ def translateSingleWord(string, src, dest):
         return results
     else:
         return results
+    
+def ExamplesForWord(word, src, dst) :
+    
+    api_root = "https://linguee-api.fly.dev/api/v2"
+    
+    json = requests.get(f"{api_root}/examples", params={"query": word, "src": src, "dst": dst})
+    resp = json.json()
+    
+    print(resp)
+    return
 
 
 class Results :
