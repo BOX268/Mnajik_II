@@ -139,6 +139,28 @@ def vowel_strip_single(words, input_ASJP_word):
 
     return(words[np.argmin(dist)])[0], dist[np.argmin(dist)] #words[np.argmin(dist)])[3] for word-type
 
+def LoadWordList(origin) :
+    
+    if(origin == 0):
+
+        words = pd.read_csv('Wordlists/eng_10000.txt', sep = '\t', header=None).values
+
+    elif(origin == 1):
+
+        words = pd.read_csv('Wordlists/fr_20000.txt', sep = '\t', header=None).values
+
+    elif(origin == 2 ):
+
+        words = pd.read_csv('Wordlists/es_10000.txt', sep = '\t', header=None).values
+
+    elif(origin == 3 ):
+
+        words = pd.read_csv('Wordlists/pt_4926.txt', sep = '\t', header=None).values
+    else :
+        words = None
+    
+    return words
+    
 
 def Mnain(input_word, origin, target):
 
@@ -162,6 +184,8 @@ def Mnain(input_word, origin, target):
     elif(origin == 3 ):
 
         words = pd.read_csv('Wordlists/pt_4926.txt', sep = '\t', header=None).values
+    
+    print(words)
 
 
     # The purpose of these list is to ling the index of the row chosen and the menu to the language's identifier
@@ -182,13 +206,11 @@ def Mnain(input_word, origin, target):
     #https://sites.google.com/site/opti365/translate_codes
 
     linguee_results = linguee.translateSingleWord(input_word, results.originID, results.targetID)
-    if (not linguee_results.success) :
-        results.errorMsg = linguee_results.error_msg
-        results.success = False
-        return results
-    
+    if (linguee_results.success) :
+        results.examples = linguee_results.examples
+    else :
+        results.examples = []
     results.translated_word = translator.translate(input_word, to_language=results.targetID, from_language=results.originID)
-    results.examples = linguee_results.examples
     results.ASJP_word = word2asjp(results.translated_word, destination_langt, destination_lang1)
     
     results.pair_split = pair_split(words, results.ASJP_word, destination_lang2)

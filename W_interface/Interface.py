@@ -20,6 +20,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import QCoreApplication
 from Mnajik_II import Mnain
+from Mnajik_II import LoadWordList
 from termcolor import colored
 import requests
 import random
@@ -256,6 +257,10 @@ class InputWindow(UIFrame.UIWindow) :
         self.errorDisplay.setAlignment(Qt.AlignCenter)
         self.errorDisplay.setFont(QFont('Oxygen', 13))
         self.containerWord.layout().addWidget(self.errorDisplay)
+        
+        self.testButton = QPushButton("Test Yourself", self)
+        self.testButton.clicked.connect(self.LaunchTest)
+        self.layout.addWidget(self.testButton)
     
     def WordSubmit(self):
         # When the word is submitted, the first thing to do is to obtain the traduction.
@@ -274,6 +279,17 @@ class InputWindow(UIFrame.UIWindow) :
         self.manager.sharedData["results"] = results
         self.Next()
         return;
+    
+    def LaunchTest(self) :
+        
+        if (self.originListwidget.row(self.originListwidget.currentItem()) == -1 or self.targetListwidget.row(self.targetListwidget.currentItem()) == -1):
+            self.errorDisplay.setText("Please select origin and target language")
+            return
+        
+        self.manager.sharedData["origin"] = self.originListwidget.row(self.originListwidget.currentItem())
+        self.manager.sharedData["target"] = self.targetListwidget.row(self.targetListwidget.currentItem())
+        
+        self.manager.Switch(3)
 
 
 class ResultsWindow(UIFrame.UIWindow):
@@ -525,6 +541,118 @@ class ExamplesWindow(UIFrame.UIWindow):
     def ToHome(self):
         self.manager.Switch(0)
         
+
+class TestWindow(UIFrame.UIWindow) :
+    
+    def __init__(self) :
+        super().__init__()
+        self.Reset(10)
+        
+    def Resize(self) :
+        screen = app.primaryScreen()
+        windowHeight = 0
+        windowHeight = screen.size().height() / 3
+        windowHeight = int(max(100, min(400, windowHeight)))
+        self.size = windowHeight
+        windowWidth = windowHeight
+        
+        self.left = 725
+        self.top = 425
+        self.width = windowWidth
+        self.height = windowHeight
+        
+        self.setGeometry(self.left, self.top, self.width, self.height)
+        
+    def InitUI(self):
+        
+        self.Resize()
+        # create the layout first
+        self.layout = QHBoxLayout()
+        self.setLayout(self.layout) 
+        
+        
+        # Then, we add the title
+        self.title = QLabel("Test : ", self)
+        self.title.setFont(QFont('Oxygen', 17))
+        self.title.setAlignment(Qt.AlignCenter)
+        self.layout.addWidget(self.title)
+        
+        self.startOfSentence = QLabel("", self)
+        self.startOfSentence.setFont(QFont('Oxygen', 17))
+        self.startOfSentence.setAlignment(Qt.AlignCenter)
+        self.layout.addWidget(self.startOfSentence)
+        
+        self.wordInput = QLineEdit(self)
+        self.layout.addWidget(self.wordInput)
+        self.wordInput.returnPressed.connect(self.Answer)
+        
+        self.endOfSentence = QLabel("", self)
+        self.endOfSentence.setFont(QFont('Oxygen', 17))
+        self.endOfSentence.setAlignment(Qt.AlignCenter)
+        self.layout.addWidget(self.endOfSentence)
+        
+    def keyPressEvent(self, event) :
+        if (event.key() == Qt.Key_Space) :
+            if (self.answered) :
+                self.LoadNewQuestion()
+                self.answered = False
+            else :
+                return
+    
+    def Reset(self, testLength) :
+        self.level = 0
+        self.maxLevel = 10
+        self.correctAnswers = 0
+        self.aswered = False
+        
+    
+    def Reload(self) :
+        self.Reset(10)
+        self.LoadNewQuestion()
+    
+    def Answer(self) :
+        word = self.wordInput.text
+        
+        return
+    
+    def LoadNewQuestion(self) :
+        wordlist = LoadWordList(self.manager.sharedData["origin"])
+        
+        self.originWord = wordlist[random.randint(0, len(wordlist)), 0]
+        
+        print(self.originWord)
+        
+        # now, we find the equivalent in the target
+        self.manager.sharedData["results"] = Mnain(self.originWord, self.manager.sharedData["origin"], self.manager.sharedData["target"])
+        
+        # now that we have all the results, we can display the text sentence
+        self.SplitSentence()
+        
+        return
+    
+    def SplitSentence(self) :
+        # this function split a sentence in two parts, around a defined word
+        done = False
+        while not done :
+            sentences = self.manager.sharedData["results"].examples
+            if (len(sentences) != 0) :
+                self.testSentence = sentences[random.randint(0, len(sentences))]["dst"]
+                done = True
+        
+        print(self.testSentence)
+        self.testWord = self.manager.sharedData["results"].translated_word
+        
+        i = 0
+        match = 0
+        splitIndex = 0
+        while (i < len(self.testSentence)) :
+            if (self.testSentence[i] == self.testWord[match]) :
+                match = match + 1
+                if (match == len(self.testWord) - 1) :
+                    return
+                    
+        return
+        
         
         
         
@@ -534,7 +662,7 @@ class ExamplesWindow(UIFrame.UIWindow):
 if __name__ == '__main__':
     windowManager = UIFrame.WindowManager()
     app = QApplication(sys.argv)
-    windowManager.Initialize((InputWindow(), ResultsWindow(), ExamplesWindow()), app)
+    windowManager.Initialize((InputWindow(), ResultsWindow(), ExamplesWindow(), TestWindow()), app)
     windowManager.Switch(0)
     #ex = App1(app)
     #ex.show()
